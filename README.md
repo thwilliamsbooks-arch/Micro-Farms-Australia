@@ -1,36 +1,83 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Micro Farms Australia
 
-## Getting Started
+> **Bring the Farm Home** — We transform suburban backyards into thriving micro farm ecosystems.
 
-First, run the development server:
+Next.js 15 (App Router) · TypeScript · Tailwind CSS v4 · Framer Motion · Resend · Netlify
+
+---
+
+## Quick Start
+
+### 1. Configure environment variables
+
+Copy `.env.local` and fill in your keys:
+
+```
+RESEND_API_KEY=your_resend_api_key_here
+CONTACT_EMAIL=your@email.com
+XAI_API_KEY=your_xai_api_key_here
+```
+
+### 2. Generate site images (requires xAI API key)
+
+```bash
+npm run generate-images
+```
+
+This calls the xAI image generation API to create all 11 site images and saves them to `public/images/`. Images that already exist are skipped automatically.
+
+### 3. Run the dev server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+> **Note:** Requires Node.js 20+. If you have nvm: `nvm use 20`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## Pages
 
-To learn more about Next.js, take a look at the following resources:
+| Route | Description |
+|-------|-------------|
+| `/` | Home — hero, farm features, journey strip, packages, mini cow, testimonials |
+| `/packages` | Three package tiers (Own It, Grow Into It, Experience It) + FAQ |
+| `/about` | Mission, story, values, team |
+| `/contact` | Enquiry form (submits via Resend) |
+| `/api/contact` | Server-side email handler |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Deploy to Netlify
 
-## Deploy on Vercel
+1. Push to GitHub
+2. Connect repo in Netlify
+3. Set environment variables in Netlify dashboard:
+   - `RESEND_API_KEY`
+   - `CONTACT_EMAIL`
+4. Deploy — `netlify.toml` handles the rest
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Tech Stack
+
+- **Framework:** Next.js 16 (App Router, SSG + SSR for API route)
+- **Styling:** Tailwind CSS v4
+- **Animations:** Framer Motion (scroll-triggered, hover lifts)
+- **Fonts:** Playfair Display · Lato · Caveat (Google Fonts)
+- **Email:** Resend API
+- **Image generation:** xAI (grok-2-image model)
+- **Deployment:** Netlify
+
+---
+
+## Image Generation
+
+Run `npm run generate-images` with your `XAI_API_KEY` set. The script:
+
+- Generates 11 images via the xAI API (hero, mini-cow, chickens, garden, bees, journey-1 through journey-6)
+- Saves to `public/images/`
+- Skips any images that already exist
+- Falls back gracefully — all image slots have emoji placeholders until real images are added
