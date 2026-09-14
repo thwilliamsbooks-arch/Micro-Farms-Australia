@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Resend } from "resend";
-
-const resend = new Resend(process.env.RESEND_API_KEY);
+import { getContactEmail, getResend } from "@/lib/resend";
 
 export async function POST(req: NextRequest) {
   try {
@@ -61,9 +59,9 @@ export async function POST(req: NextRequest) {
       </div>
     `;
 
-    await resend.emails.send({
+    await getResend().emails.send({
       from: "Micro Farms Australia <onboarding@resend.dev>",
-      to: [process.env.CONTACT_EMAIL || "thwilliamsbooks@gmail.com"],
+      to: [getContactEmail()],
       replyTo: email,
       subject: `New Enquiry from ${fullName} — Micro Farms Australia`,
       html: htmlContent,

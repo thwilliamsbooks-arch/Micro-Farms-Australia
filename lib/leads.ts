@@ -2,7 +2,10 @@ import { promises as fs } from "fs";
 import { randomUUID } from "crypto";
 import path from "path";
 
-const DATA_DIR = path.join(process.cwd(), "data");
+// On Vercel the app filesystem is read-only except /tmp (and writes do not persist).
+const DATA_DIR = process.env.VERCEL
+  ? path.join("/tmp", "mfa-data")
+  : path.join(process.cwd(), "data");
 const LEADS_FILE = path.join(DATA_DIR, "leads.json");
 
 export interface Lead {
