@@ -6,6 +6,7 @@ export default function manifest(): MetadataRoute.Manifest {
     short_name: "Micro Farms",
     description:
       "We transform suburban backyards into thriving micro farm ecosystems — chickens, bees, gardens, and even miniature cows. Country living, right outside your door.",
+    id: "/",
     start_url: "/",
     scope: "/",
     display: "standalone",
