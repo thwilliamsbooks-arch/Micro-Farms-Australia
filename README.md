@@ -2,7 +2,7 @@
 
 > **Bring the Farm Home** — We transform suburban backyards into thriving micro farm ecosystems.
 
-Next.js 15 (App Router) · TypeScript · Tailwind CSS v4 · Framer Motion · Resend · Netlify
+Next.js 16 (App Router) · TypeScript · Tailwind CSS v4 · Framer Motion · Resend · Vercel
 
 ---
 
@@ -10,13 +10,17 @@ Next.js 15 (App Router) · TypeScript · Tailwind CSS v4 · Framer Motion · Res
 
 ### 1. Configure environment variables
 
-Copy `.env.local` and fill in your keys:
+Copy `.env.example` to `.env.local` and fill in values:
 
 ```
-RESEND_API_KEY=your_resend_api_key_here
-CONTACT_EMAIL=your@email.com
-XAI_API_KEY=your_xai_api_key_here
+RESEND_API_KEY=     # Resend API key — sends contact + free-inspection emails
+CONTACT_EMAIL=      # Inbox that receives form submissions
+ADMIN_PASSWORD=     # Password for /admin/leads
 ```
+
+`XAI_API_KEY` is only needed locally for `npm run generate-images`. It is not used in production.
+
+None of these are required for `npm run build`. Set them in the Vercel project (Production / Preview / Development) before relying on forms or the admin dashboard.
 
 ### 2. Generate site images (requires xAI API key)
 
@@ -42,22 +46,31 @@ Open [http://localhost:3000](http://localhost:3000)
 
 | Route | Description |
 |-------|-------------|
-| `/` | Home — hero, farm features, journey strip, packages, mini cow, testimonials |
+| `/` | Home — hero, story sequence, product spread, packages, mini cow, testimonials |
 | `/packages` | Three package tiers (Own It, Grow Into It, Experience It) + FAQ |
 | `/about` | Mission, story, values, team |
 | `/contact` | Enquiry form (submits via Resend) |
-| `/api/contact` | Server-side email handler |
+| `/free-inspection` | Free backyard assessment form (email + local lead store) |
+| `/admin/leads` | Password-protected lead list |
+| `/api/contact` | Contact form email handler |
+| `/api/free-inspection` | Inspection form handler (persist lead + owner/customer email) |
+| `/api/admin/login` | Admin session cookie |
+| `/api/admin/logout` | Clear admin session |
 
 ---
 
-## Deploy to Netlify
+## Deploy to Vercel
 
-1. Push to GitHub
-2. Connect repo in Netlify
-3. Set environment variables in Netlify dashboard:
-   - `RESEND_API_KEY`
-   - `CONTACT_EMAIL`
-4. Deploy — `netlify.toml` handles the rest
+1. Import the GitHub repo in Vercel (Framework Preset: Next.js).
+2. Set environment variables in the Vercel project:
+   - `RESEND_API_KEY` — required for forms to send mail
+   - `CONTACT_EMAIL` — destination inbox for submissions
+   - `ADMIN_PASSWORD` — required to open `/admin/leads`
+3. Deploy. `next.config.ts` is default (local images only; no remote image domains). Node 20+ is required.
+
+`netlify.toml` remains for the previous Netlify setup and is unused on Vercel.
+
+On Vercel, `/admin/leads` file storage is ephemeral (writes go to `/tmp`). Emails from Resend are the durable record of submissions.
 
 ---
 
@@ -69,7 +82,7 @@ Open [http://localhost:3000](http://localhost:3000)
 - **Fonts:** Playfair Display · Lato · Caveat (Google Fonts)
 - **Email:** Resend API
 - **Image generation:** xAI (grok-2-image model)
-- **Deployment:** Netlify
+- **Deployment:** Vercel
 
 ---
 

@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Resend } from "resend";
 import { saveLead } from "@/lib/leads";
-
-const resend = new Resend(process.env.RESEND_API_KEY);
+import { getContactEmail, getResend } from "@/lib/resend";
 
 const sizeLabels: Record<string, string> = {
   "under-200": "Under 200m²",
@@ -50,18 +48,25 @@ export async function POST(req: NextRequest) {
 
     const interestList: string[] = Array.isArray(interests) ? interests : [];
 
-    const lead = await saveLead({
-      fullName,
-      email,
-      phone,
-      suburb,
-      backyardSize,
-      interests: interestList,
-      ownerStatus,
-      packagePreference: packagePreference || "",
-      bestTimeToContact: bestTimeToContact || "",
-      message: message || "",
-    });
+    let lead: { id: string; submittedAt: string };
+    try {
+      lead = await saveLead({
+        fullName,
+        email,
+        phone,
+        suburb,
+        backyardSize,
+        interests: interestList,
+        ownerStatus,
+        packagePreference: packagePreference || "",
+        bestTimeToContact: bestTimeToContact || "",
+        message: message || "",
+      });
+    } catch (persistErr) {
+      // Vercel serverless filesystems are ephemeral / often read-only outside /tmp.
+      console.error("Failed to persist lead:", persistErr);
+      lead = { id: "unpersisted", submittedAt: new Date().toISOString() };
+    }
 
     const sizeLabel = sizeLabels[backyardSize] || backyardSize;
     const packageLabel = packagePreference
@@ -131,10 +136,11 @@ export async function POST(req: NextRequest) {
       </div>
     `;
 
+    const resend = getResend();
     await Promise.all([
       resend.emails.send({
         from: "Micro Farms Australia <onboarding@resend.dev>",
-        to: [process.env.CONTACT_EMAIL || "thwilliamsbooks@gmail.com"],
+        to: [getContactEmail()],
         replyTo: email,
         subject: `🌱 New Inspection Request — ${fullName}, ${suburb}`,
         html: ownerHtml,
